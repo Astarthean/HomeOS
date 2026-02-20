@@ -1,0 +1,17 @@
+# Node
+node_modules/
+npm-debug.log
+
+# PHP
+vendor/
+.env
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Docker
+*.log
+
+.env
