@@ -26,6 +26,10 @@ services:
     environment:
       APP_ENV: dev
       MONGODB_URI: mongodb://mongodb:27017/users_db
+      JWT_SECRET: ${JWT_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL}
     volumes:
       - ./services/user:/app
       - /app/node_modules

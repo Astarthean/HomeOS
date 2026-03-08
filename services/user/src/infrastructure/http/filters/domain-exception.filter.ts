@@ -3,6 +3,7 @@ import {
   Catch,
   ArgumentsHost,
   HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { DomainException } from '../../../domain/exceptions/domain.exception';
@@ -30,6 +31,11 @@ export class DomainExceptionFilter implements ExceptionFilter {
       if (exception instanceof UserAlreadyExistsException || exception instanceof UserIdAlreadyExistsException) {
         status = HttpStatus.CONFLICT;
       }
+    } else if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      const res = exception.getResponse();
+      message = (res as any).message || exception.message;
+      error = (res as any).error || exception.name;
     } else if (this.isMongoDuplicateError(exception)) {
       status = HttpStatus.CONFLICT;
       message = 'Ya existe un registro con esos datos (Duplicado)';

@@ -20,13 +20,15 @@ export class MongooseUserRepository implements UserRepository {
     const data = {
       _id: id,
       email: user.getEmail().getValue(),
-      passwordHash: user.getPasswordHash().getValue(),
+      passwordHash: user.getPasswordHash()?.getValue() ?? null,
+      googleId: user.getGoogleId() ?? null,
     };
 
-    // Usamos 'updateOne' con 'upsert: true' pero de forma que si es una creación nueva
-    // y falla por duplicado, lance el error que el filtro atrapará.
-    // Sin embargo, para un flujo de REGISTRO, lo mejor es ser explícitos.
-    await this.userModel.updateOne({ _id: id }, { $set: data }, { upsert: true });
+    await this.userModel.updateOne(
+      { _id: id },
+      { $set: data },
+      { upsert: true },
+    );
   }
 
   async findById(id: UserId): Promise<User | null> {
@@ -45,11 +47,19 @@ export class MongooseUserRepository implements UserRepository {
     return this.mapToDomain(document);
   }
 
+  async findByGoogleId(googleId: string): Promise<User | null> {
+    const document = await this.userModel.findOne({ googleId }).exec();
+    if (!document) return null;
+
+    return this.mapToDomain(document);
+  }
+
   private mapToDomain(document: UserDocument): User {
     return User.create(
       new UserId(document._id),
       new Email(document.email),
-      new PasswordHash(document.passwordHash),
+      document.passwordHash ? new PasswordHash(document.passwordHash) : null,
+      document.googleId,
     );
   }
 }

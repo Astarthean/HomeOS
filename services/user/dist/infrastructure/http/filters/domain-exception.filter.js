@@ -28,6 +28,12 @@ let DomainExceptionFilter = class DomainExceptionFilter {
                 status = common_1.HttpStatus.CONFLICT;
             }
         }
+        else if (exception instanceof common_1.HttpException) {
+            status = exception.getStatus();
+            const res = exception.getResponse();
+            message = res.message || exception.message;
+            error = res.error || exception.name;
+        }
         else if (this.isMongoDuplicateError(exception)) {
             status = common_1.HttpStatus.CONFLICT;
             message = 'Ya existe un registro con esos datos (Duplicado)';

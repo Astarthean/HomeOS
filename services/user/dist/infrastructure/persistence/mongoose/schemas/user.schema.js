@@ -15,6 +15,7 @@ let User = class User {
     _id;
     email;
     passwordHash;
+    googleId;
 };
 exports.User = User;
 __decorate([
@@ -26,9 +27,13 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
-    (0, mongoose_1.Prop)({ required: true }),
+    (0, mongoose_1.Prop)({ required: false }),
     __metadata("design:type", String)
 ], User.prototype, "passwordHash", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ required: false, unique: true, sparse: true }),
+    __metadata("design:type", String)
+], User.prototype, "googleId", void 0);
 exports.User = User = __decorate([
     (0, mongoose_1.Schema)({ collection: 'users' })
 ], User);

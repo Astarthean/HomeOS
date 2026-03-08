@@ -5,4 +5,5 @@ export interface UserRepository {
     save(user: User): Promise<void>;
     findById(id: UserId): Promise<User | null>;
     findByEmail(email: Email): Promise<User | null>;
+    findByGoogleId(googleId: string): Promise<User | null>;
 }

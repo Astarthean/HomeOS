@@ -31,7 +31,8 @@ let MongooseUserRepository = class MongooseUserRepository {
         const data = {
             _id: id,
             email: user.getEmail().getValue(),
-            passwordHash: user.getPasswordHash().getValue(),
+            passwordHash: user.getPasswordHash()?.getValue() ?? null,
+            googleId: user.getGoogleId() ?? null,
         };
         await this.userModel.updateOne({ _id: id }, { $set: data }, { upsert: true });
     }
@@ -49,8 +50,14 @@ let MongooseUserRepository = class MongooseUserRepository {
             return null;
         return this.mapToDomain(document);
     }
+    async findByGoogleId(googleId) {
+        const document = await this.userModel.findOne({ googleId }).exec();
+        if (!document)
+            return null;
+        return this.mapToDomain(document);
+    }
     mapToDomain(document) {
-        return user_entity_1.User.create(new user_id_vo_1.UserId(document._id), new email_vo_1.Email(document.email), new password_hash_vo_1.PasswordHash(document.passwordHash));
+        return user_entity_1.User.create(new user_id_vo_1.UserId(document._id), new email_vo_1.Email(document.email), document.passwordHash ? new password_hash_vo_1.PasswordHash(document.passwordHash) : null, document.googleId);
     }
 };
 exports.MongooseUserRepository = MongooseUserRepository;
