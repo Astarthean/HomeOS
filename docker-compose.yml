@@ -16,6 +16,38 @@ services:
     depends_on:
       - db
 
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+      target: dev
+    ports:
+      - "3001:3000"
+    environment:
+      - NEXT_PUBLIC_USER_SERVICE_URL=${NEXT_PUBLIC_USER_SERVICE_URL}
+      - NEXT_PUBLIC_FINANCE_SERVICE_URL=${NEXT_PUBLIC_FINANCE_SERVICE_URL}
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - user
+      - finance
+
+  mobile:
+    build:
+      context: ./apps/mobile
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - EXPO_PUBLIC_API_URL=${NEXT_PUBLIC_USER_SERVICE_URL}
+    volumes:
+      - ./apps/mobile:/app
+      - /app/node_modules
+    depends_on:
+      - user
+
   user:
     build:
       context: ./services/user
@@ -24,8 +56,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      APP_ENV: dev
-      MONGODB_URI: mongodb://mongodb:27017/users_db
+      APP_ENV: ${APP_ENV:-dev}
+      MONGODB_URI: ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
@@ -41,7 +73,7 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: finance_db
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
