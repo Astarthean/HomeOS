@@ -16,4 +16,9 @@ final readonly class AccountId
     {
         return $this->id;
     }
+
+    public function __toString(): string
+    {
+        return $this->id;
+    }
 }

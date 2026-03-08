@@ -8,6 +8,7 @@ use App\Domain\Exception\InsufficientFundsException;
 use App\Domain\ValueObject\AccountId;
 use App\Domain\ValueObject\AccountType;
 use App\Domain\ValueObject\Money;
+use App\Domain\ValueObject\TransactionType;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -91,4 +92,14 @@ class Account
 
         $this->balance = $this->balance->subtract($amount);
     }
+
+    public function applyTransaction(Transaction $transaction): void
+    {
+        if ($transaction->getType() === TransactionType::DEPOSIT) {
+            $this->balance = $this->balance->add($transaction->getAmount());
+        } elseif ($transaction->getType() === TransactionType::WITHDRAWAL) {
+            $this->balance = $this->balance->subtract($transaction->getAmount());
+        }
+    }
+
 }
