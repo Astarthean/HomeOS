@@ -8,16 +8,42 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
-const app_controller_1 = require("./app.controller");
-const app_service_1 = require("./app.service");
+const mongoose_1 = require("@nestjs/mongoose");
+const config_1 = require("@nestjs/config");
+const user_schema_1 = require("./infrastructure/persistence/mongoose/schemas/user.schema");
+const mongoose_user_repository_1 = require("./infrastructure/persistence/mongoose/repositories/mongoose-user.repository");
+const register_user_handler_1 = require("./application/handlers/register-user.handler");
+const register_user_controller_1 = require("./infrastructure/http/controllers/register-user.controller");
+const core_1 = require("@nestjs/core");
+const domain_exception_filter_1 = require("./infrastructure/http/filters/domain-exception.filter");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [],
-        controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        imports: [
+            config_1.ConfigModule.forRoot({ isGlobal: true }),
+            mongoose_1.MongooseModule.forRootAsync({
+                imports: [config_1.ConfigModule],
+                inject: [config_1.ConfigService],
+                useFactory: (config) => ({
+                    uri: config.get('MONGODB_URI'),
+                }),
+            }),
+            mongoose_1.MongooseModule.forFeature([{ name: user_schema_1.User.name, schema: user_schema_1.UserSchema }]),
+        ],
+        controllers: [register_user_controller_1.RegisterUserController],
+        providers: [
+            register_user_handler_1.RegisterUserHandler,
+            {
+                provide: 'UserRepository',
+                useClass: mongoose_user_repository_1.MongooseUserRepository,
+            },
+            {
+                provide: core_1.APP_FILTER,
+                useClass: domain_exception_filter_1.DomainExceptionFilter,
+            },
+        ],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map
