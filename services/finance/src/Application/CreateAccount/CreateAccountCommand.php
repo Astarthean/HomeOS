@@ -8,6 +8,9 @@ final class CreateAccountCommand
 {
     public function __construct(
         public readonly string $accountId,
+        public readonly string $name,
+        public readonly string $type,
+        public readonly string $ownerId,
         public readonly string $currency,
         public readonly int $initialBalance
     ) {

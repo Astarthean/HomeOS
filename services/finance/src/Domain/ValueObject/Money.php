@@ -16,11 +16,8 @@ final readonly class Money
         #[ORM\Column(type: 'string', length: 3)]
         private string $currency
     ) {
-        $allowedCurrencies = ['EUR'];
-
-        if (!in_array($this->currency, $allowedCurrencies, true)) {
-            throw new InvalidCurrencyException();
-
+        if (!in_array($currency, ['EUR'])) {
+            throw new InvalidCurrencyException($currency);
         }
     }
 
@@ -34,20 +31,19 @@ final readonly class Money
         return $this->currency;
     }
 
-    public function add(Money $money): Money
+    public function add(Money $money): self
     {
-        if ($this->currency !== $money->getCurrency()) {
-            throw new InvalidCurrencyException();
+        if ($this->currency !== $money->currency) {
+            throw new InvalidCurrencyException($money->currency);
         }
 
         return new Money($this->amount + $money->getAmount(), $this->currency);
     }
 
-    public function subtract(Money $money): Money
+    public function subtract(Money $money): self
     {
-        if ($this->currency !== $money->getCurrency()) {
-            throw new InvalidCurrencyException();
-
+        if ($this->currency !== $money->currency) {
+            throw new InvalidCurrencyException($money->currency);
         }
 
         return new Money($this->amount - $money->getAmount(), $this->currency);

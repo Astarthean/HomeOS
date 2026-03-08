@@ -25,13 +25,21 @@ final class CreateAccountController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
+        if (!is_array($data)) {
+            throw new \InvalidArgumentException('El payload JSON es inválido o está vacío.');
+        }
+
         $this->messageBus->dispatch(
             new CreateAccountCommand(
                 accountId: $data['id'],
+                name: $data['name'],
+                type: $data['type'],
+                ownerId: $data['owner_id'],
                 currency: $data['currency'],
                 initialBalance: $data['initial_balance']
             )
         );
+
 
         return new JsonResponse(null, Response::HTTP_CREATED);
     }
