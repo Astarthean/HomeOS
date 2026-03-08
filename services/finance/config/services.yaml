@@ -11,14 +11,24 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
+    # Auto-tag every class implementing CommandHandlerInterface as a Messenger Handler
+    # No need to manually tag each new Handler
+    _instanceof:
+        App\Application\Command\CommandHandlerInterface:
+            tags:
+                - { name: messenger.message_handler }
+
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
-            - '../src/Entity/'
+            - '../src/Domain/Entity/'
+            - '../src/Domain/ValueObject/'
+            - '../src/Domain/Exception/'
             - '../src/Kernel.php'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    # Bind the Interface (Port) to the concrete Infrastructure implementation (Adapter)
+    App\Domain\Repository\AccountRepositoryInterface:
+        class: App\Infrastructure\Persistence\Doctrine\PostgreSqlAccountRepository

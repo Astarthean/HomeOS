@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Domain\ValueObject;
 
 use App\Domain\Exception\InvalidCurrencyException;
+use Doctrine\ORM\Mapping as ORM;
 
+#[ORM\Embeddable]
 final readonly class Money
 {
     public function __construct(
+        #[ORM\Column(type: 'integer')]
         private int $amount,
+        #[ORM\Column(type: 'string', length: 3)]
         private string $currency
     ) {
         $allowedCurrencies = ['EUR'];
